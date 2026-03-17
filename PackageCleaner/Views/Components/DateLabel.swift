@@ -17,7 +17,7 @@ struct DateLabel: View {
             if let source = source {
                 Text("(\(source.displayName))")
                     .font(.caption)
-                    .foregroundColor(.tertiary)
+                    .foregroundColor(.secondary)
             }
         }
     }

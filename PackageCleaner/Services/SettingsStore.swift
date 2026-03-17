@@ -19,10 +19,8 @@ class SettingsStore: ObservableObject {
             scanDirectories = [homeDir]
         }
         
-        autoCleanupThresholdDays = defaults.integer(forKey: Constants.UserDefaultsKeys.autoCleanupThresholdDays)
-        if autoCleanupThresholdDays == 0 {
-            autoCleanupThresholdDays = Constants.defaultAutoCleanupThresholdDays
-        }
+        let threshold = defaults.integer(forKey: Constants.UserDefaultsKeys.autoCleanupThresholdDays)
+        autoCleanupThresholdDays = threshold == 0 ? Constants.defaultAutoCleanupThresholdDays : threshold
         
         excludedPaths = defaults.stringArray(forKey: Constants.UserDefaultsKeys.excludedPaths) ?? []
         

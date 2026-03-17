@@ -7,26 +7,24 @@ struct MainView: View {
     @State private var showingSettings = false
     
     var body: some View {
-        NavigationSplitView {
-            SidebarView(viewModel: mainViewModel)
-        } detail: {
-            VStack(spacing: 0) {
-                ToolbarView(
-                    mainViewModel: mainViewModel,
-                    cleanupViewModel: cleanupViewModel,
-                    showingSettings: $showingSettings
-                )
-                
-                Divider()
-                
-                DirectoryListView(viewModel: mainViewModel)
-                
-                Divider()
-                
-                statusBar
+        Group {
+            if #available(macOS 13.0, *) {
+                NavigationSplitView {
+                    SidebarView(viewModel: mainViewModel)
+                } detail: {
+                    mainContent
+                }
+                .navigationTitle("Package Cleaner")
+            } else {
+                HStack(spacing: 0) {
+                    SidebarView(viewModel: mainViewModel)
+                        .frame(width: 250)
+                    Divider()
+                    mainContent
+                }
+                .navigationTitle("Package Cleaner")
             }
         }
-        .navigationTitle("Package Cleaner")
         .overlay {
             if mainViewModel.isScanning, let progress = mainViewModel.scanProgress {
                 Color.black.opacity(0.3)
@@ -82,6 +80,24 @@ struct MainView: View {
         }
         .sheet(isPresented: $showingSettings) {
             SettingsView(viewModel: settingsViewModel)
+        }
+    }
+    
+    private var mainContent: some View {
+        VStack(spacing: 0) {
+            ToolbarView(
+                mainViewModel: mainViewModel,
+                cleanupViewModel: cleanupViewModel,
+                showingSettings: $showingSettings
+            )
+            
+            Divider()
+            
+            DirectoryListView(viewModel: mainViewModel)
+            
+            Divider()
+            
+            statusBar
         }
     }
     

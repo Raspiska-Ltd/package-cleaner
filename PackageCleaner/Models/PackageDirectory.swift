@@ -46,7 +46,7 @@ struct PackageDirectory: Identifiable, Hashable, Codable {
         return components.day ?? 0
     }
     
-    var isOlderThan(days: Int) -> Bool {
+    func isOlderThan(days: Int) -> Bool {
         return ageInDays > days
     }
 }
