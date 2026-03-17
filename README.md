@@ -1,4 +1,4 @@
-# Package Cleaner
+ # Package Cleaner
 
 A native macOS application that helps developers reclaim disk space by finding and removing package dependency directories from development projects.
 

@@ -39,6 +39,19 @@ class MainViewModel: ObservableObject {
     ) {
         self.scannerService = scannerService
         self.settingsStore = settingsStore
+        
+        loadCachedResults()
+    }
+    
+    private func loadCachedResults() {
+        let cached = PersistenceController.shared.loadScanResults()
+        if !cached.isEmpty {
+            scanResults = cached
+        }
+    }
+    
+    private func saveScanResults() {
+        PersistenceController.shared.saveScanResults(scanResults)
     }
     
     var filteredAndSortedResults: [PackageDirectory] {
@@ -116,6 +129,7 @@ class MainViewModel: ObservableObject {
                 )
                 
                 scanResults = results
+                saveScanResults()
                 
             } catch is CancellationError {
                 errorMessage = "Scan cancelled"
@@ -145,5 +159,6 @@ class MainViewModel: ObservableObject {
     func removeDeletedDirectories(_ deletedIDs: Set<PackageDirectory.ID>) {
         scanResults.removeAll { deletedIDs.contains($0.id) }
         selectedDirectories.subtract(deletedIDs)
+        saveScanResults()
     }
 }

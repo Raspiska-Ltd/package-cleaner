@@ -2,19 +2,40 @@ import SwiftUI
 
 struct SidebarView: View {
     @ObservedObject var viewModel: MainViewModel
+    @State private var isFiltersExpanded = true
+    @State private var isPackageTypesExpanded = true
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Image(systemName: "line.3.horizontal.decrease.circle.fill")
-                            .foregroundColor(.accentColor)
-                        Text("Filters")
-                            .font(.system(size: 16, weight: .semibold))
-                    }
-                    .padding(.horizontal, 16)
+            VStack(alignment: .leading, spacing: 16) {
+                VStack(spacing: 8) {
+                    actionButton(
+                        title: "Select All",
+                        icon: "checkmark.circle.fill",
+                        color: .blue,
+                        action: viewModel.selectAll,
+                        disabled: viewModel.filteredAndSortedResults.isEmpty
+                    )
                     
+                    actionButton(
+                        title: "Deselect All",
+                        icon: "circle",
+                        color: .gray,
+                        action: viewModel.deselectAll,
+                        disabled: viewModel.selectedDirectories.isEmpty
+                    )
+                }
+                .padding(.horizontal, 12)
+                .padding(.top, 16)
+                
+                Divider()
+                    .padding(.horizontal, 16)
+                
+                AccordionSection(
+                    title: "Filters",
+                    icon: "line.3.horizontal.decrease.circle.fill",
+                    isExpanded: $isFiltersExpanded
+                ) {
                     VStack(spacing: 4) {
                         filterButton(
                             title: "All Languages",
@@ -32,20 +53,17 @@ struct SidebarView: View {
                             )
                         }
                     }
+                    .padding(.bottom, 12)
                 }
                 
                 Divider()
                     .padding(.horizontal, 16)
                 
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Image(systemName: "shippingbox.fill")
-                            .foregroundColor(.accentColor)
-                        Text("Package Types")
-                            .font(.system(size: 16, weight: .semibold))
-                    }
-                    .padding(.horizontal, 16)
-                    
+                AccordionSection(
+                    title: "Package Types",
+                    icon: "shippingbox.fill",
+                    isExpanded: $isPackageTypesExpanded
+                ) {
                     VStack(spacing: 4) {
                         filterButton(
                             title: "All Types",
@@ -63,49 +81,10 @@ struct SidebarView: View {
                             )
                         }
                     }
-                }
-                
-                Divider()
-                    .padding(.horizontal, 16)
-                
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Image(systemName: "bolt.fill")
-                            .foregroundColor(.accentColor)
-                        Text("Quick Actions")
-                            .font(.system(size: 16, weight: .semibold))
-                    }
-                    .padding(.horizontal, 16)
-                    
-                    VStack(spacing: 8) {
-                        actionButton(
-                            title: "Select All",
-                            icon: "checkmark.circle.fill",
-                            color: .blue,
-                            action: viewModel.selectAll,
-                            disabled: viewModel.filteredAndSortedResults.isEmpty
-                        )
-                        
-                        actionButton(
-                            title: "Deselect All",
-                            icon: "circle",
-                            color: .gray,
-                            action: viewModel.deselectAll,
-                            disabled: viewModel.selectedDirectories.isEmpty
-                        )
-                        
-                        actionButton(
-                            title: "Select Old Projects",
-                            icon: "clock.badge.exclamationmark",
-                            color: .orange,
-                            action: viewModel.selectAutoCleanupCandidates,
-                            disabled: viewModel.autoCleanupCandidates.isEmpty
-                        )
-                    }
-                    .padding(.horizontal, 12)
+                    .padding(.bottom, 12)
                 }
             }
-            .padding(.vertical, 16)
+            .padding(.bottom, 16)
         }
         .frame(minWidth: 200, idealWidth: 250, maxWidth: 300)
         .background(Color(nsColor: .controlBackgroundColor).opacity(0.5))

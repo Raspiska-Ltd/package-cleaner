@@ -5,39 +5,134 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        TabView {
-            generalSettings
-                .tabItem {
-                    Label("General", systemImage: "gear")
+        VStack(spacing: 0) {
+            HStack {
+                Text("Settings")
+                    .font(.system(size: 20, weight: .semibold))
+                
+                Spacer()
+                
+                Button(action: { dismiss() }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 20))
+                        .foregroundColor(.secondary)
                 }
+                .buttonStyle(.plain)
+            }
+            .padding(16)
+            .background(Color(nsColor: .windowBackgroundColor))
             
-            scanSettings
-                .tabItem {
-                    Label("Scan", systemImage: "magnifyingglass")
-                }
+            Divider()
             
-            packageTypesSettings
-                .tabItem {
-                    Label("Package Types", systemImage: "shippingbox")
-                }
+            TabView {
+                generalSettings
+                    .tabItem {
+                        Label("General", systemImage: "gear")
+                    }
+                
+                scanSettings
+                    .tabItem {
+                        Label("Scan", systemImage: "magnifyingglass")
+                    }
+                
+                packageTypesSettings
+                    .tabItem {
+                        Label("Package Types", systemImage: "shippingbox")
+                    }
+                
+                aboutSettings
+                    .tabItem {
+                        Label("About", systemImage: "info.circle")
+                    }
+            }
         }
-        .frame(width: 600, height: 400)
+        .frame(width: 650, height: 500)
     }
     
     private var generalSettings: some View {
-        Form {
-            Section("Cleanup Behavior") {
-                Toggle("Move to Trash (instead of permanent delete)", isOn: $viewModel.settingsStore.moveToTrash)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                ModernCard {
+                    VStack(alignment: .leading, spacing: 16) {
+                        HStack {
+                            Image(systemName: "trash.circle.fill")
+                                .font(.system(size: 24))
+                                .foregroundColor(.orange)
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Cleanup Behavior")
+                                    .font(.system(size: 16, weight: .semibold))
+                                Text("Configure how package directories are deleted")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        
+                        Divider()
+                        
+                        Toggle(isOn: $viewModel.settingsStore.moveToTrash) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Move to Trash")
+                                    .font(.system(size: 14, weight: .medium))
+                                Text("Files can be recovered from Trash (recommended)")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .toggleStyle(.switch)
+                    }
+                }
                 
-                Stepper(
-                    "Auto-cleanup threshold: \(viewModel.settingsStore.autoCleanupThresholdDays) days",
-                    value: $viewModel.settingsStore.autoCleanupThresholdDays,
-                    in: 30...365,
-                    step: 30
-                )
+                ModernCard {
+                    VStack(alignment: .leading, spacing: 16) {
+                        HStack {
+                            Image(systemName: "clock.arrow.circlepath")
+                                .font(.system(size: 24))
+                                .foregroundColor(.blue)
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Auto-Cleanup Threshold")
+                                    .font(.system(size: 16, weight: .semibold))
+                                Text("Projects older than this will be marked for cleanup")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        
+                        Divider()
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text("\(viewModel.settingsStore.autoCleanupThresholdDays) days")
+                                    .font(.system(size: 18, weight: .semibold, design: .rounded))
+                                    .foregroundColor(.accentColor)
+                                Spacer()
+                            }
+                            
+                            Slider(
+                                value: Binding(
+                                    get: { Double(viewModel.settingsStore.autoCleanupThresholdDays) },
+                                    set: { viewModel.settingsStore.autoCleanupThresholdDays = Int($0) }
+                                ),
+                                in: 30...365,
+                                step: 30
+                            )
+                            
+                            HStack {
+                                Text("30 days")
+                                    .font(.system(size: 11))
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                                Text("365 days")
+                                    .font(.system(size: 11))
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                }
             }
+            .padding(20)
         }
-        .padding()
         .onChange(of: viewModel.settingsStore.moveToTrash) { _ in
             viewModel.saveSettings()
         }
@@ -48,26 +143,77 @@ struct SettingsView: View {
     
     private var scanSettings: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Scan Directories")
-                .font(.headline)
-            
-            List {
-                ForEach(viewModel.settingsStore.scanDirectories, id: \.self) { directory in
+            ModernCard {
+                VStack(alignment: .leading, spacing: 16) {
                     HStack {
-                        Image(systemName: "folder")
-                        Text(directory.path)
-                            .lineLimit(1)
-                            .truncationMode(.middle)
+                        Image(systemName: "folder.badge.magnifyingglass")
+                            .font(.system(size: 24))
+                            .foregroundColor(.purple)
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Scan Directories")
+                                .font(.system(size: 16, weight: .semibold))
+                            Text("Choose which directories to scan for package folders")
+                                .font(.system(size: 12))
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        Spacer()
+                        
+                        ModernButton("Add", icon: "plus.circle.fill", style: .primary) {
+                            viewModel.showingDirectoryPicker = true
+                        }
+                    }
+                    
+                    Divider()
+                    
+                    if viewModel.settingsStore.scanDirectories.isEmpty {
+                        VStack(spacing: 12) {
+                            Image(systemName: "folder.badge.questionmark")
+                                .font(.system(size: 40))
+                                .foregroundColor(.secondary)
+                            Text("No directories added")
+                                .font(.system(size: 14))
+                                .foregroundColor(.secondary)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 40)
+                    } else {
+                        VStack(spacing: 8) {
+                            ForEach(viewModel.settingsStore.scanDirectories, id: \.self) { directory in
+                                HStack(spacing: 12) {
+                                    Image(systemName: "folder.fill")
+                                        .foregroundColor(.accentColor)
+                                    
+                                    Text(directory.path)
+                                        .font(.system(size: 13))
+                                        .lineLimit(1)
+                                        .truncationMode(.middle)
+                                    
+                                    Spacer()
+                                    
+                                    Button(action: {
+                                        if let index = viewModel.settingsStore.scanDirectories.firstIndex(of: directory) {
+                                            viewModel.removeScanDirectory(at: IndexSet(integer: index))
+                                        }
+                                    }) {
+                                        Image(systemName: "xmark.circle.fill")
+                                            .foregroundColor(.secondary)
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                                .padding(10)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .fill(Color(nsColor: .controlBackgroundColor))
+                                )
+                            }
+                        }
                     }
                 }
-                .onDelete(perform: viewModel.removeScanDirectory)
             }
-            
-            Button("Add Directory...") {
-                viewModel.showingDirectoryPicker = true
-            }
+            .padding(20)
         }
-        .padding()
         .fileImporter(
             isPresented: $viewModel.showingDirectoryPicker,
             allowedContentTypes: [.folder],
@@ -80,31 +226,185 @@ struct SettingsView: View {
     }
     
     private var packageTypesSettings: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Enabled Package Types")
-                .font(.headline)
-            
-            Text("Select which package directory types to scan for:")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-            
-            List {
-                ForEach(PackageType.allCases) { type in
-                    Toggle(isOn: Binding(
-                        get: { viewModel.settingsStore.enabledPackageTypes.contains(type) },
-                        set: { _ in viewModel.togglePackageType(type) }
-                    )) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(type.displayName)
-                                .font(.body)
-                            Text(type.associatedLanguages.map { $0.displayName }.joined(separator: ", "))
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                ModernCard {
+                    VStack(alignment: .leading, spacing: 16) {
+                        HStack {
+                            Image(systemName: "shippingbox.fill")
+                                .font(.system(size: 24))
+                                .foregroundColor(.green)
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Package Types")
+                                    .font(.system(size: 16, weight: .semibold))
+                                Text("Select which package directory types to scan for")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        
+                        Divider()
+                        
+                        VStack(spacing: 12) {
+                            ForEach(PackageType.allCases) { type in
+                                HStack(spacing: 12) {
+                                    Toggle(isOn: Binding(
+                                        get: { viewModel.settingsStore.enabledPackageTypes.contains(type) },
+                                        set: { _ in viewModel.togglePackageType(type) }
+                                    )) {
+                                        HStack(spacing: 12) {
+                                            Image(systemName: "folder.fill")
+                                                .foregroundColor(viewModel.settingsStore.enabledPackageTypes.contains(type) ? .accentColor : .secondary)
+                                            
+                                            VStack(alignment: .leading, spacing: 4) {
+                                                Text(type.displayName)
+                                                    .font(.system(size: 14, weight: .medium))
+                                                Text(type.associatedLanguages.map { $0.displayName }.joined(separator: ", "))
+                                                    .font(.system(size: 12))
+                                                    .foregroundColor(.secondary)
+                                            }
+                                        }
+                                    }
+                                    .toggleStyle(.switch)
+                                }
+                                .padding(10)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .fill(Color(nsColor: .controlBackgroundColor))
+                                )
+                            }
                         }
                     }
                 }
             }
+            .padding(20)
         }
-        .padding()
+    }
+    
+    private var aboutSettings: some View {
+        ScrollView {
+            VStack(spacing: 24) {
+                VStack(spacing: 16) {
+                    Image(systemName: "app.gift.fill")
+                        .font(.system(size: 60))
+                        .foregroundColor(.accentColor)
+                    
+                    Text("Package Cleaner")
+                        .font(.system(size: 24, weight: .bold))
+                    
+                    Text("Version 1.0.0")
+                        .font(.system(size: 14))
+                        .foregroundColor(.secondary)
+                }
+                .padding(.top, 20)
+                
+                ModernCard {
+                    VStack(alignment: .leading, spacing: 16) {
+                        HStack {
+                            Image(systemName: "building.2.fill")
+                                .font(.system(size: 24))
+                                .foregroundColor(.blue)
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Raspiska Ltd")
+                                    .font(.system(size: 16, weight: .semibold))
+                                Text("Software Development Company")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        
+                        Divider()
+                        
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Package Cleaner is a native macOS application designed to help developers reclaim disk space by finding and removing package dependency directories from development projects.")
+                                .font(.system(size: 13))
+                                .foregroundColor(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                }
+                
+                ModernCard {
+                    VStack(alignment: .leading, spacing: 16) {
+                        HStack {
+                            Image(systemName: "heart.circle.fill")
+                                .font(.system(size: 24))
+                                .foregroundColor(.red)
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Open Source")
+                                    .font(.system(size: 16, weight: .semibold))
+                                Text("Free and open source software")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        
+                        Divider()
+                        
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                Image(systemName: "doc.text.fill")
+                                    .foregroundColor(.accentColor)
+                                Text("MIT License")
+                                    .font(.system(size: 13))
+                            }
+                            
+                            Button(action: {
+                                if let url = URL(string: "https://github.com/raspiska/package-cleaner") {
+                                    NSWorkspace.shared.open(url)
+                                }
+                            }) {
+                                HStack {
+                                    Image(systemName: "link.circle.fill")
+                                    Text("View on GitHub")
+                                    Spacer()
+                                    Image(systemName: "arrow.up.right")
+                                }
+                                .font(.system(size: 13, weight: .medium))
+                                .padding(10)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .fill(Color.accentColor.opacity(0.1))
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .stroke(Color.accentColor.opacity(0.3), lineWidth: 1)
+                                )
+                            }
+                            .buttonStyle(.plain)
+                            
+                            Button(action: {
+                                if let url = URL(string: "https://github.com/raspiska/package-cleaner/issues") {
+                                    NSWorkspace.shared.open(url)
+                                }
+                            }) {
+                                HStack {
+                                    Image(systemName: "exclamationmark.bubble.fill")
+                                    Text("Report an Issue")
+                                    Spacer()
+                                    Image(systemName: "arrow.up.right")
+                                }
+                                .font(.system(size: 13, weight: .medium))
+                                .padding(10)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .fill(Color(nsColor: .controlBackgroundColor))
+                                )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+                
+                Text("© 2026 Raspiska Ltd. All rights reserved.")
+                    .font(.system(size: 11))
+                    .foregroundColor(.secondary)
+                    .padding(.bottom, 20)
+            }
+            .padding(.horizontal, 20)
+        }
     }
 }

@@ -14,6 +14,13 @@ struct ToolbarView: View {
                 .disabled(mainViewModel.isScanning)
                 .keyboardShortcut("r", modifiers: .command)
                 
+                if !mainViewModel.autoCleanupCandidates.isEmpty {
+                    ModernButton("Select Old", icon: "clock.badge.exclamationmark", style: .secondary) {
+                        mainViewModel.selectAutoCleanupCandidates()
+                    }
+                    .disabled(mainViewModel.isScanning)
+                }
+                
                 Menu {
                     ForEach(MainViewModel.SortOption.allCases, id: \.self) { option in
                         Button(action: { mainViewModel.sortOption = option }) {
@@ -47,27 +54,14 @@ struct ToolbarView: View {
             Divider()
                 .frame(height: 24)
             
-            HStack(spacing: 10) {
-                ModernButton("Delete", icon: "trash.fill", style: .destructive) {
-                    cleanupViewModel.requestDeletion(
-                        directories: mainViewModel.selectedDirectoriesArray,
-                        onComplete: mainViewModel.removeDeletedDirectories
-                    )
-                }
-                .disabled(mainViewModel.selectedDirectories.isEmpty || cleanupViewModel.isDeleting)
-                .keyboardShortcut(.delete, modifiers: .command)
-                
-                if !mainViewModel.autoCleanupCandidates.isEmpty {
-                    ModernButton("Auto-Cleanup", icon: "sparkles", style: .primary) {
-                        mainViewModel.selectAutoCleanupCandidates()
-                        cleanupViewModel.requestDeletion(
-                            directories: mainViewModel.autoCleanupCandidates,
-                            onComplete: mainViewModel.removeDeletedDirectories
-                        )
-                    }
-                    .disabled(cleanupViewModel.isDeleting)
-                }
+            ModernButton("Delete", icon: "trash.fill", style: .destructive) {
+                cleanupViewModel.requestDeletion(
+                    directories: mainViewModel.selectedDirectoriesArray,
+                    onComplete: mainViewModel.removeDeletedDirectories
+                )
             }
+            .disabled(mainViewModel.selectedDirectories.isEmpty || cleanupViewModel.isDeleting)
+            .keyboardShortcut(.delete, modifiers: .command)
             
             Spacer()
             
