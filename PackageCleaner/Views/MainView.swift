@@ -27,24 +27,24 @@ struct MainView: View {
         }
         .overlay {
             if mainViewModel.isScanning, let progress = mainViewModel.scanProgress {
-                Color.black.opacity(0.3)
+                Color.black.opacity(0.4)
                     .ignoresSafeArea()
                 
-                ProgressOverlay(
-                    title: "Scanning...",
-                    message: "\(progress.directoriesFound) directories found\n\(progress.formattedSize)",
+                ModernProgressView(
+                    title: "Scanning Directories",
+                    subtitle: "\(progress.directoriesFound) directories found • \(progress.formattedSize)",
                     progress: nil,
                     onCancel: mainViewModel.cancelScan
                 )
             }
             
             if cleanupViewModel.isDeleting, let progress = cleanupViewModel.cleanupProgress {
-                Color.black.opacity(0.3)
+                Color.black.opacity(0.4)
                     .ignoresSafeArea()
                 
-                ProgressOverlay(
-                    title: "Deleting...",
-                    message: "\(progress.completed) of \(progress.total)\n\(progress.formattedFreedSpace) freed",
+                ModernProgressView(
+                    title: "Cleaning Up",
+                    subtitle: "\(progress.completed) of \(progress.total) deleted • \(progress.formattedFreedSpace) freed",
                     progress: progress.percentage,
                     onCancel: cleanupViewModel.cancelDeletion
                 )

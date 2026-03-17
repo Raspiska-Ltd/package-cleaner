@@ -12,9 +12,19 @@ let package = Package(
             targets: ["PackageCleaner"]
         )
     ],
+    dependencies: [
+        .package(url: "https://github.com/SwiftUIX/SwiftUIX.git", from: "0.1.9"),
+        .package(url: "https://github.com/sindresorhus/Defaults.git", from: "7.3.1"),
+        .package(url: "https://github.com/sindresorhus/KeyboardShortcuts.git", from: "1.15.0")
+    ],
     targets: [
         .executableTarget(
             name: "PackageCleaner",
+            dependencies: [
+                "SwiftUIX",
+                "Defaults",
+                "KeyboardShortcuts"
+            ],
             path: "PackageCleaner"
         ),
         .testTarget(
