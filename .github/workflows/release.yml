@@ -1,0 +1,82 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Swift
+      uses: swift-actions/setup-swift@v1
+      with:
+        swift-version: '5.9'
+    
+    - name: Get version from tag
+      id: get_version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+    
+    - name: Build app
+      run: |
+        chmod +x scripts/build-app.sh
+        ./scripts/build-app.sh
+    
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Package Cleaner ${{ steps.get_version.outputs.VERSION }}
+        body: |
+          ## Package Cleaner v${{ steps.get_version.outputs.VERSION }}
+          
+          A native macOS application to help developers reclaim disk space by finding and removing package dependency directories.
+          
+          ### Installation
+          
+          1. Download `Package.Cleaner.zip`
+          2. Unzip the file
+          3. Move `Package Cleaner.app` to your Applications folder
+          4. Right-click and select "Open" on first launch (macOS security)
+          
+          ### Features
+          
+          - 🔍 Scan multiple directories for package folders
+          - 📊 View size and last activity for each project
+          - 🎯 Smart filtering by language and package type
+          - 🗑️ Safe deletion (moves to Trash by default)
+          - 💾 Persistent cache - no need to re-scan
+          - ⌨️ Keyboard shortcuts for power users
+          
+          ### Requirements
+          
+          - macOS 12.0 or later
+          - Apple Silicon or Intel Mac
+          
+          ### What's New
+          
+          See [CHANGELOG.md](https://github.com/Raspiska-Ltd/package-cleaner/blob/main/CHANGELOG.md) for details.
+          
+          ---
+          
+          Made with ❤️ by [Raspiska Ltd](https://raspiska.co?utm_source=github&utm_medium=release&utm_campaign=package-cleaner)
+        draft: false
+        prerelease: false
+    
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: .build/release/Package Cleaner.zip
+        asset_name: Package.Cleaner.zip
+        asset_content_type: application/zip

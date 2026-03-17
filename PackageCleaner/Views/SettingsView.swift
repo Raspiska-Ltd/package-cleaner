@@ -322,6 +322,30 @@ struct SettingsView: View {
                                 .font(.system(size: 13))
                                 .foregroundColor(.secondary)
                                 .fixedSize(horizontal: false, vertical: true)
+                            
+                            Button(action: {
+                                if let url = URL(string: "https://raspiska.co?utm_source=package-cleaner&utm_medium=app&utm_campaign=about") {
+                                    NSWorkspace.shared.open(url)
+                                }
+                            }) {
+                                HStack {
+                                    Image(systemName: "globe")
+                                    Text("Visit raspiska.co")
+                                    Spacer()
+                                    Image(systemName: "arrow.up.right")
+                                }
+                                .font(.system(size: 13, weight: .medium))
+                                .padding(10)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .fill(Color.blue.opacity(0.1))
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .stroke(Color.blue.opacity(0.3), lineWidth: 1)
+                                )
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
                 }
@@ -353,7 +377,7 @@ struct SettingsView: View {
                             }
                             
                             Button(action: {
-                                if let url = URL(string: "https://github.com/raspiska/package-cleaner") {
+                                if let url = URL(string: "https://github.com/Raspiska-Ltd/package-cleaner") {
                                     NSWorkspace.shared.open(url)
                                 }
                             }) {
@@ -377,7 +401,7 @@ struct SettingsView: View {
                             .buttonStyle(.plain)
                             
                             Button(action: {
-                                if let url = URL(string: "https://github.com/raspiska/package-cleaner/issues") {
+                                if let url = URL(string: "https://github.com/Raspiska-Ltd/package-cleaner/issues") {
                                     NSWorkspace.shared.open(url)
                                 }
                             }) {

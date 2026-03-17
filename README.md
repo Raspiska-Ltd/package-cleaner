@@ -40,41 +40,61 @@ A native macOS application that helps developers reclaim disk space by finding a
 
 ## Installation
 
-### Download
+### Download (Recommended)
 
-Download the latest release from the [Releases](https://github.com/YOUR_USERNAME/package-cleaner/releases) page.
+1. Download the latest `Package.Cleaner.zip` from the [Releases](https://github.com/Raspiska-Ltd/package-cleaner/releases) page
+2. Unzip the file
+3. Move `Package Cleaner.app` to your `/Applications` folder
+4. Right-click the app and select "Open" on first launch (macOS security requirement)
 
 ### Build from Source
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/package-cleaner.git
+git clone git@github.com:Raspiska-Ltd/package-cleaner.git
 cd package-cleaner
-open PackageCleaner.xcodeproj
+swift build -c release
+./scripts/build-app.sh
 ```
 
-Build and run using Xcode (Cmd+R).
+The built app will be in `.build/release/Package Cleaner.app`
 
 ---
 
 ## Usage
 
-### Scanning
+### First Time Setup
 
 1. Launch Package Cleaner
-2. Click "Scan" to search for package directories
-3. Wait for the scan to complete
+2. Open Settings (⌘,) and add directories to scan (e.g., `~/Projects`, `~/Developer`)
+3. Configure auto-cleanup threshold (default: 180 days)
 
-### Manual Cleanup
+### Scanning
 
-1. Select directories you want to remove
-2. Click "Delete Selected"
-3. Confirm the deletion
+1. Click **Scan** (⌘R) to search for package directories
+2. Watch live progress showing current directory and found count
+3. Results appear automatically with statistics
 
-### Auto-Cleanup
+### Filtering & Sorting
 
-1. Click "Auto-Cleanup" to find directories older than 6 months
-2. Review the list of candidates
-3. Confirm to delete all qualifying directories
+- Use **Language** and **Type** dropdowns to filter results
+- Click **Sort** to change order (Name, Size, Date, Language)
+- Toggle ascending/descending with the arrow icon
+- Use the search bar (⌘F) to find specific projects
+
+### Cleanup
+
+**Manual Selection:**
+1. Select individual directories by clicking checkboxes
+2. Or use quick actions: **All**, **None**, or **Old** (projects older than threshold)
+3. Click **Delete** (⌘⌫) to remove selected directories
+4. Confirm deletion - files move to Trash by default
+
+**Keyboard Shortcuts:**
+- `⌘R` - Start scan
+- `⌘F` - Focus search
+- `⌘A` - Select all
+- `⌘⌫` - Delete selected
+- `⌘,` - Open settings
 
 ---
 
@@ -106,10 +126,23 @@ Contributions are welcome. Please read the [Contributing Guide](docs/CONTRIBUTIN
 
 ## License
 
-This project is open source. See the [LICENSE](LICENSE) file for details.
+MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## About
+
+**Package Cleaner** is developed by [Raspiska Ltd](https://raspiska.co?utm_source=github&utm_medium=readme&utm_campaign=package-cleaner), a software development company focused on creating developer tools and productivity applications.
+
+### Links
+
+- 🌐 Website: [raspiska.co](https://raspiska.co?utm_source=github&utm_medium=readme&utm_campaign=package-cleaner)
+- 💻 GitHub: [Raspiska-Ltd/package-cleaner](https://github.com/Raspiska-Ltd/package-cleaner)
+- 🐛 Issues: [Report a bug](https://github.com/Raspiska-Ltd/package-cleaner/issues)
+- 📖 Releases: [Download latest version](https://github.com/Raspiska-Ltd/package-cleaner/releases)
 
 ---
 
 ## Acknowledgments
 
-Inspired by tools like npkill, but built as a native macOS application with broader language support.
+Inspired by tools like npkill, but built as a native macOS application with broader language support and modern UI.
