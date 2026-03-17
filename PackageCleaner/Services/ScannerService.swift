@@ -4,7 +4,7 @@ protocol ScannerServiceProtocol {
     func scan(
         directories: [URL],
         packageTypes: Set<PackageType>,
-        progress: @escaping (ScanProgress) -> Void
+        progress: @escaping (ScanProgress, String) -> Void
     ) async throws -> [PackageDirectory]
     func cancel()
 }
@@ -21,7 +21,7 @@ class ScannerService: ScannerServiceProtocol {
     func scan(
         directories: [URL],
         packageTypes: Set<PackageType>,
-        progress: @escaping (ScanProgress) -> Void
+        progress: @escaping (ScanProgress, String) -> Void
     ) async throws -> [PackageDirectory] {
         isCancelled = false
         var results: [PackageDirectory] = []
@@ -35,11 +35,12 @@ class ScannerService: ScannerServiceProtocol {
                 packageTypes: packageTypes,
                 progress: { currentPath, found, size in
                     totalSize = size
+                    let displayPath = URL(fileURLWithPath: currentPath).lastPathComponent
                     progress(ScanProgress(
                         currentPath: currentPath,
                         directoriesFound: results.count + found,
                         totalSize: totalSize
-                    ))
+                    ), displayPath)
                 }
             )
             

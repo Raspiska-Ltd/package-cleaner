@@ -7,14 +7,16 @@ class MainViewModel: ObservableObject {
     @Published var selectedDirectories: Set<PackageDirectory.ID> = []
     @Published var isScanning = false
     @Published var scanProgress: ScanProgress?
+    @Published var currentScanDirectory: String = ""
     @Published var filterLanguage: Language?
     @Published var filterPackageType: PackageType?
     @Published var searchText = ""
     @Published var sortOption: SortOption = .size
+    @Published var sortAscending = false
     @Published var errorMessage: String?
     
     private let scannerService: ScannerServiceProtocol
-    private let settingsStore: SettingsStore
+    let settingsStore: SettingsStore
     private var scanTask: Task<Void, Never>?
     
     enum SortOption: String, CaseIterable {
@@ -74,13 +76,19 @@ class MainViewModel: ObservableObject {
         
         switch sortOption {
         case .name:
-            results.sort { $0.projectName.localizedCompare($1.projectName) == .orderedAscending }
+            results.sort { 
+                let comparison = $0.projectName.localizedCompare($1.projectName) == .orderedAscending
+                return sortAscending ? comparison : !comparison
+            }
         case .size:
-            results.sort { $0.size > $1.size }
+            results.sort { sortAscending ? $0.size < $1.size : $0.size > $1.size }
         case .date:
-            results.sort { $0.lastActivity > $1.lastActivity }
+            results.sort { sortAscending ? $0.lastActivity < $1.lastActivity : $0.lastActivity > $1.lastActivity }
         case .language:
-            results.sort { $0.language.displayName.localizedCompare($1.language.displayName) == .orderedAscending }
+            results.sort { 
+                let comparison = $0.language.displayName.localizedCompare($1.language.displayName) == .orderedAscending
+                return sortAscending ? comparison : !comparison
+            }
         }
         
         return results
@@ -121,14 +129,16 @@ class MainViewModel: ObservableObject {
                 let results = try await scannerService.scan(
                     directories: settingsStore.scanDirectories,
                     packageTypes: settingsStore.enabledPackageTypes,
-                    progress: { [weak self] progress in
+                    progress: { [weak self] progress, currentDir in
                         Task { @MainActor in
                             self?.scanProgress = progress
+                            self?.currentScanDirectory = currentDir
                         }
                     }
                 )
                 
                 scanResults = results
+                currentScanDirectory = ""
                 saveScanResults()
                 
             } catch is CancellationError {

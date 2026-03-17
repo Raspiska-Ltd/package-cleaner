@@ -7,37 +7,9 @@ struct MainView: View {
     @State private var showingSettings = false
     
     var body: some View {
-        Group {
-            if #available(macOS 13.0, *) {
-                NavigationSplitView {
-                    SidebarView(viewModel: mainViewModel)
-                } detail: {
-                    mainContent
-                }
-                .navigationTitle("Package Cleaner")
-            } else {
-                HStack(spacing: 0) {
-                    SidebarView(viewModel: mainViewModel)
-                        .frame(width: 250)
-                    Divider()
-                    mainContent
-                }
-                .navigationTitle("Package Cleaner")
-            }
-        }
+        mainContent
+            .navigationTitle("Package Cleaner")
         .overlay {
-            if mainViewModel.isScanning, let progress = mainViewModel.scanProgress {
-                Color.black.opacity(0.4)
-                    .ignoresSafeArea()
-                
-                ModernProgressView(
-                    title: "Scanning Directories",
-                    subtitle: "\(progress.directoriesFound) directories found • \(progress.formattedSize)",
-                    progress: nil,
-                    onCancel: mainViewModel.cancelScan
-                )
-            }
-            
             if cleanupViewModel.isDeleting, let progress = cleanupViewModel.cleanupProgress {
                 Color.black.opacity(0.4)
                     .ignoresSafeArea()
@@ -85,43 +57,24 @@ struct MainView: View {
     
     private var mainContent: some View {
         VStack(spacing: 0) {
-            ToolbarView(
+            ScanToolbarView(
                 mainViewModel: mainViewModel,
-                cleanupViewModel: cleanupViewModel,
                 showingSettings: $showingSettings
             )
             
             Divider()
             
-            DirectoryListView(viewModel: mainViewModel)
-            
-            Divider()
-            
-            statusBar
-        }
-    }
-    
-    private var statusBar: some View {
-        HStack {
-            Text("\(mainViewModel.filteredAndSortedResults.count) directories")
-                .font(.caption)
-            
-            Spacer()
-            
-            if !mainViewModel.selectedDirectories.isEmpty {
-                Text("\(mainViewModel.selectedDirectories.count) selected (\(mainViewModel.selectedSize.formattedByteCount))")
-                    .font(.caption)
+            if !mainViewModel.scanResults.isEmpty {
+                ResultsToolbarView(
+                    mainViewModel: mainViewModel,
+                    cleanupViewModel: cleanupViewModel
+                )
                 
-                Spacer()
+                Divider()
             }
             
-            Text("Total: \(mainViewModel.totalSize.formattedByteCount)")
-                .font(.caption)
-                .fontWeight(.semibold)
+            DirectoryListView(viewModel: mainViewModel)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(Color(nsColor: .controlBackgroundColor))
     }
     
     private func resultMessage(_ result: CleanupResult) -> String {
