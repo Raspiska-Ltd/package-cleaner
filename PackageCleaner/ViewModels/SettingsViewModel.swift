@@ -3,10 +3,10 @@ import SwiftUI
 
 @MainActor
 class SettingsViewModel: ObservableObject {
-    @Published var settingsStore: SettingsStore
+    @ObservedObject var settingsStore: SettingsStore
     @Published var showingDirectoryPicker = false
     
-    init(settingsStore: SettingsStore = SettingsStore()) {
+    init(settingsStore: SettingsStore = .shared) {
         self.settingsStore = settingsStore
     }
     
@@ -18,6 +18,8 @@ class SettingsViewModel: ObservableObject {
     }
     
     func removeScanDirectory(at offsets: IndexSet) {
+        objectWillChange.send()
+        settingsStore.objectWillChange.send()
         settingsStore.scanDirectories.remove(atOffsets: offsets)
         settingsStore.save()
     }
@@ -45,5 +47,9 @@ class SettingsViewModel: ObservableObject {
     
     func saveSettings() {
         settingsStore.save()
+    }
+    
+    func resetToDefaults() {
+        settingsStore.resetToDefaults()
     }
 }

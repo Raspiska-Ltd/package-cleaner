@@ -2,6 +2,8 @@ import SwiftUI
 
 @main
 struct PackageCleanerApp: App {
+    @StateObject private var settingsViewModel = SettingsViewModel()
+    
     var body: some Scene {
         WindowGroup {
             MainView()
@@ -12,7 +14,7 @@ struct PackageCleanerApp: App {
         }
         
         Settings {
-            SettingsView(viewModel: SettingsViewModel())
+            SettingsView(viewModel: settingsViewModel)
         }
     }
 }

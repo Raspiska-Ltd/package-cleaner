@@ -2,7 +2,6 @@ import Foundation
 
 enum Constants {
     static let defaultAutoCleanupThresholdDays = 180
-    static let defaultScanDirectory = FileManager.default.homeDirectoryForCurrentUser
     
     enum UserDefaultsKeys {
         static let scanDirectories = "scanDirectories"

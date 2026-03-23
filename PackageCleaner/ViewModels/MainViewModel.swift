@@ -16,7 +16,7 @@ class MainViewModel: ObservableObject {
     @Published var errorMessage: String?
     
     private let scannerService: ScannerServiceProtocol
-    let settingsStore: SettingsStore
+    @ObservedObject var settingsStore: SettingsStore
     private var scanTask: Task<Void, Never>?
     
     enum SortOption: String, CaseIterable {
@@ -37,7 +37,7 @@ class MainViewModel: ObservableObject {
     
     init(
         scannerService: ScannerServiceProtocol = ScannerService(),
-        settingsStore: SettingsStore = SettingsStore()
+        settingsStore: SettingsStore = .shared
     ) {
         self.scannerService = scannerService
         self.settingsStore = settingsStore
@@ -111,6 +111,12 @@ class MainViewModel: ObservableObject {
     }
     
     func startScan() {
+        // Validate scan directories are configured
+        guard !settingsStore.scanDirectories.isEmpty else {
+            errorMessage = "Please add scan directories in Settings before scanning"
+            return
+        }
+        
         scanTask?.cancel()
         
         scanTask = Task {
@@ -170,5 +176,11 @@ class MainViewModel: ObservableObject {
         scanResults.removeAll { deletedIDs.contains($0.id) }
         selectedDirectories.subtract(deletedIDs)
         saveScanResults()
+    }
+    
+    func clearResults() {
+        scanResults.removeAll()
+        selectedDirectories.removeAll()
+        PersistenceController.shared.clearCache()
     }
 }

@@ -15,7 +15,7 @@ class CleanupViewModel: ObservableObject {
     
     init(
         cleanupService: CleanupServiceProtocol = CleanupService(),
-        settingsStore: SettingsStore = SettingsStore()
+        settingsStore: SettingsStore = .shared
     ) {
         self.cleanupService = cleanupService
         self.settingsStore = settingsStore

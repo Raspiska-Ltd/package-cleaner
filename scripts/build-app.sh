@@ -67,14 +67,38 @@ cat > "$CONTENTS_DIR/Info.plist" << EOF
     <true/>
     <key>LSApplicationCategoryType</key>
     <string>public.app-category.developer-tools</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
 </dict>
 </plist>
 EOF
 
-# Copy assets if they exist
-if [ -d "PackageCleaner/Resources/Assets.xcassets" ]; then
-    echo "🎨 Copying assets..."
-    cp -r "PackageCleaner/Resources/Assets.xcassets" "$RESOURCES_DIR/"
+# Create app icon from iconset
+ICONSET_DIR="PackageCleaner/Resources/Assets.xcassets/AppIcon.appiconset"
+if [ -d "$ICONSET_DIR" ]; then
+    echo "🎨 Creating app icon..."
+    
+    # Create temporary iconset
+    TEMP_ICONSET=$(mktemp -d)/AppIcon.iconset
+    mkdir -p "$TEMP_ICONSET"
+    
+    # Copy and rename icons to iconset format
+    cp "$ICONSET_DIR/icon_16x16.png" "$TEMP_ICONSET/icon_16x16.png"
+    cp "$ICONSET_DIR/icon_16x16@2x.png" "$TEMP_ICONSET/icon_16x16@2x.png"
+    cp "$ICONSET_DIR/icon_32x32.png" "$TEMP_ICONSET/icon_32x32.png"
+    cp "$ICONSET_DIR/icon_32x32@2x.png" "$TEMP_ICONSET/icon_32x32@2x.png"
+    cp "$ICONSET_DIR/icon_128x128.png" "$TEMP_ICONSET/icon_128x128.png"
+    cp "$ICONSET_DIR/icon_128x128@2x.png" "$TEMP_ICONSET/icon_128x128@2x.png"
+    cp "$ICONSET_DIR/icon_256x256.png" "$TEMP_ICONSET/icon_256x256.png"
+    cp "$ICONSET_DIR/icon_256x256@2x.png" "$TEMP_ICONSET/icon_256x256@2x.png"
+    cp "$ICONSET_DIR/icon_512x512.png" "$TEMP_ICONSET/icon_512x512.png"
+    cp "$ICONSET_DIR/icon_512x512@2x.png" "$TEMP_ICONSET/icon_512x512@2x.png"
+    
+    # Convert iconset to icns
+    iconutil -c icns "$TEMP_ICONSET" -o "$RESOURCES_DIR/AppIcon.icns"
+    
+    # Cleanup
+    rm -rf "$(dirname "$TEMP_ICONSET")"
 fi
 
 # Create PkgInfo

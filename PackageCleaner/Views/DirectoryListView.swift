@@ -33,35 +33,50 @@ struct DirectoryListView: View {
                     )
                     .frame(width: 120, height: 120)
                 
-                Image(systemName: "folder.badge.magnifyingglass")
+                Image(systemName: viewModel.settingsStore.scanDirectories.isEmpty ? "folder.badge.plus" : "folder.badge.magnifyingglass")
                     .font(.system(size: 50, weight: .light))
                     .foregroundColor(.accentColor)
             }
             
             VStack(spacing: 8) {
-                Text("No Package Directories Found")
+                Text(viewModel.settingsStore.scanDirectories.isEmpty ? "No Scan Directories Configured" : "No Package Directories Found")
                     .font(.system(size: 20, weight: .semibold))
                 
-                Text("Click 'Scan' to search for package directories in your system")
+                Text(viewModel.settingsStore.scanDirectories.isEmpty 
+                     ? "Add directories to scan in Settings (⌘,) to get started"
+                     : "Click 'Scan' to search for package directories")
                     .font(.system(size: 14))
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
             }
             
-            HStack(spacing: 12) {
-                Image(systemName: "lightbulb.fill")
-                    .foregroundColor(.yellow)
-                Image(systemName: "info.circle.fill")
-                    .foregroundColor(.blue)
-                Text("Package Cleaner finds node_modules, vendor, and other dependency folders")
-                    .font(.system(size: 12))
-                    .foregroundColor(.secondary)
+            if viewModel.settingsStore.scanDirectories.isEmpty {
+                HStack(spacing: 12) {
+                    Image(systemName: "info.circle.fill")
+                        .foregroundColor(.blue)
+                    Text("For best results, add specific directories like ~/Projects or ~/Developer")
+                        .font(.system(size: 12))
+                        .foregroundColor(.secondary)
+                }
+                .padding(12)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color(nsColor: .controlBackgroundColor))
+                )
+            } else {
+                HStack(spacing: 12) {
+                    Image(systemName: "lightbulb.fill")
+                        .foregroundColor(.yellow)
+                    Text("Package Cleaner finds node_modules, vendor, and other dependency folders")
+                        .font(.system(size: 12))
+                        .foregroundColor(.secondary)
+                }
+                .padding(12)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color(nsColor: .controlBackgroundColor))
+                )
             }
-            .padding(12)
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color(nsColor: .controlBackgroundColor))
-            )
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(40)

@@ -3,6 +3,8 @@ import SwiftUI
 struct SettingsView: View {
     @ObservedObject var viewModel: SettingsViewModel
     @Environment(\.dismiss) private var dismiss
+    @State private var showingResetConfirmation = false
+    @State private var showingResetSuccess = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -47,11 +49,45 @@ struct SettingsView: View {
             }
         }
         .frame(width: 650, height: 500)
+        .alert("Reset to Defaults", isPresented: $showingResetConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Reset", role: .destructive) {
+                viewModel.resetToDefaults()
+                showingResetSuccess = true
+            }
+        } message: {
+            Text("This will reset all settings to their default values. This action cannot be undone.")
+        }
+        .alert("Settings Reset", isPresented: $showingResetSuccess) {
+            Button("OK") {
+                dismiss()
+            }
+        } message: {
+            Text("All settings have been reset to their default values.")
+        }
     }
     
     private var generalSettings: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
+            VStack(alignment: .leading, spacing: 16) {
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        showingResetConfirmation = true
+                    }) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "arrow.counterclockwise")
+                            Text("Reset to Defaults")
+                        }
+                        .font(.system(size: 13))
+                        .foregroundColor(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                    .help("Reset all settings to default values")
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 8)
+                
                 ModernCard {
                     VStack(alignment: .leading, spacing: 16) {
                         HStack {
@@ -180,12 +216,12 @@ struct SettingsView: View {
                         .padding(.vertical, 40)
                     } else {
                         VStack(spacing: 8) {
-                            ForEach(viewModel.settingsStore.scanDirectories, id: \.self) { directory in
+                            ForEach(viewModel.settingsStore.scanDirectories.indices, id: \.self) { index in
                                 HStack(spacing: 12) {
                                     Image(systemName: "folder.fill")
                                         .foregroundColor(.accentColor)
                                     
-                                    Text(directory.path)
+                                    Text(viewModel.settingsStore.scanDirectories[index].path)
                                         .font(.system(size: 13))
                                         .lineLimit(1)
                                         .truncationMode(.middle)
@@ -193,9 +229,7 @@ struct SettingsView: View {
                                     Spacer()
                                     
                                     Button(action: {
-                                        if let index = viewModel.settingsStore.scanDirectories.firstIndex(of: directory) {
-                                            viewModel.removeScanDirectory(at: IndexSet(integer: index))
-                                        }
+                                        viewModel.removeScanDirectory(at: IndexSet(integer: index))
                                     }) {
                                         Image(systemName: "xmark.circle.fill")
                                             .foregroundColor(.secondary)

@@ -49,6 +49,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Icon-based quick actions with tooltips
 - Responsive layout adapting to content
 
+## [1.0.1] - 2026-03-23
+
+### Added
+- 🎨 App icon with proper macOS integration (displays in Finder, Dock, app switcher)
+- 🔄 Reset to Defaults button in Settings with confirmation dialogs
+- 🧹 Clear Results button to remove scan data
+- 📝 Icon conversion script for iOS to macOS format
+
+### Fixed
+- 🔒 Permission management - no longer requests access on app launch
+- 🔒 Permissions only requested for user-selected directories
+- ⚙️ Settings UI now updates immediately when adding/removing directories
+- ⚙️ SettingsStore singleton ensures consistent state across all views
+- 🎯 Scan button properly disabled when no directories configured
+- 📊 Empty state messages now context-aware (before/after configuration)
+- 🔧 Build script properly embeds app icon using iconutil
+
+### Changed
+- 🏠 Default scan directory set to home directory on first launch
+- 💬 Improved user guidance with helpful tooltips and messages
+- 🎨 Better visual feedback for Reset to Defaults action
+
+### Technical
+- Singleton pattern for SettingsStore to prevent state inconsistencies
+- Manual objectWillChange triggers for reliable UI updates
+- ForEach using indices for proper list tracking
+- Alert placement in main view hierarchy for proper display
+
 ## [Unreleased]
 
 ### Added

@@ -9,8 +9,29 @@ struct ScanToolbarView: View {
             ModernButton("Scan", icon: "magnifyingglass.circle.fill", style: .primary) {
                 mainViewModel.startScan()
             }
-            .disabled(mainViewModel.isScanning)
+            .disabled(mainViewModel.isScanning || mainViewModel.settingsStore.scanDirectories.isEmpty)
             .keyboardShortcut("r", modifiers: .command)
+            .help(mainViewModel.settingsStore.scanDirectories.isEmpty ? "Add scan directories in Settings first" : "Scan for package directories (⌘R)")
+            
+            if !mainViewModel.scanResults.isEmpty && !mainViewModel.isScanning {
+                Button(action: {
+                    mainViewModel.clearResults()
+                }) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 13))
+                        Text("Clear")
+                            .font(.system(size: 13, weight: .medium))
+                    }
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color(nsColor: .controlBackgroundColor))
+                    .cornerRadius(6)
+                }
+                .buttonStyle(.plain)
+                .help("Clear all results")
+            }
             
             if mainViewModel.isScanning {
                 HStack(spacing: 8) {

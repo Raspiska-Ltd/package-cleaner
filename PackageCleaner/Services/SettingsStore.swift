@@ -2,6 +2,8 @@ import Foundation
 import Combine
 
 class SettingsStore: ObservableObject {
+    static let shared = SettingsStore()
+    
     @Published var scanDirectories: [URL]
     @Published var autoCleanupThresholdDays: Int
     @Published var excludedPaths: [String]
@@ -10,13 +12,12 @@ class SettingsStore: ObservableObject {
     
     private let defaults = UserDefaults.standard
     
-    init() {
-        let homeDir = FileManager.default.homeDirectoryForCurrentUser
-        
+    private init() {
         if let paths = defaults.stringArray(forKey: Constants.UserDefaultsKeys.scanDirectories) {
             scanDirectories = paths.map { URL(fileURLWithPath: $0) }
         } else {
-            scanDirectories = [homeDir]
+            // Default to home directory on first launch
+            scanDirectories = [FileManager.default.homeDirectoryForCurrentUser]
         }
         
         let threshold = defaults.integer(forKey: Constants.UserDefaultsKeys.autoCleanupThresholdDays)
@@ -39,5 +40,14 @@ class SettingsStore: ObservableObject {
         defaults.set(excludedPaths, forKey: Constants.UserDefaultsKeys.excludedPaths)
         defaults.set(moveToTrash, forKey: Constants.UserDefaultsKeys.moveToTrash)
         defaults.set(enabledPackageTypes.map { $0.rawValue }, forKey: Constants.UserDefaultsKeys.enabledPackageTypes)
+    }
+    
+    func resetToDefaults() {
+        scanDirectories = [FileManager.default.homeDirectoryForCurrentUser]
+        autoCleanupThresholdDays = Constants.defaultAutoCleanupThresholdDays
+        excludedPaths = []
+        moveToTrash = true
+        enabledPackageTypes = Set(PackageType.allCases)
+        save()
     }
 }
