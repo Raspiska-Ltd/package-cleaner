@@ -117,6 +117,11 @@ class MainViewModel: ObservableObject {
             return
         }
         
+        print("🔍 Starting scan with \(settingsStore.scanDirectories.count) directories:")
+        for dir in settingsStore.scanDirectories {
+            print("  📁 \(dir.path)")
+        }
+        
         scanTask?.cancel()
         
         scanTask = Task {

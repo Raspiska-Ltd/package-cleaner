@@ -1,9 +1,9 @@
 import SwiftUI
 
 struct MainView: View {
-    @StateObject private var mainViewModel = MainViewModel()
-    @StateObject private var cleanupViewModel = CleanupViewModel()
-    @StateObject private var settingsViewModel = SettingsViewModel()
+    @ObservedObject var mainViewModel: MainViewModel
+    @ObservedObject var cleanupViewModel: CleanupViewModel
+    @ObservedObject var settingsViewModel: SettingsViewModel
     @State private var showingSettings = false
     
     var body: some View {
@@ -53,6 +53,12 @@ struct MainView: View {
         .sheet(isPresented: $showingSettings) {
             SettingsView(viewModel: settingsViewModel)
         }
+        .onChange(of: showingSettings) { isShowing in
+            if isShowing {
+                // Always open to Scan tab when opened from empty state
+                settingsViewModel.selectedTab = 1
+            }
+        }
     }
     
     private var mainContent: some View {
@@ -73,7 +79,7 @@ struct MainView: View {
                 Divider()
             }
             
-            DirectoryListView(viewModel: mainViewModel)
+            DirectoryListView(viewModel: mainViewModel, showingSettings: $showingSettings)
         }
     }
     

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DirectoryListView: View {
     @ObservedObject var viewModel: MainViewModel
+    @Binding var showingSettings: Bool
     
     var body: some View {
         VStack(spacing: 0) {
@@ -33,10 +34,19 @@ struct DirectoryListView: View {
                     )
                     .frame(width: 120, height: 120)
                 
-                Image(systemName: viewModel.settingsStore.scanDirectories.isEmpty ? "folder.badge.plus" : "folder.badge.magnifyingglass")
+                let iconName = viewModel.settingsStore.scanDirectories.isEmpty ? "folder.fill.badge.plus" : "folder.fill"
+                
+                Image(systemName: iconName)
                     .font(.system(size: 50, weight: .light))
                     .foregroundColor(.accentColor)
+                    .symbolRenderingMode(.hierarchical)
             }
+            .onTapGesture {
+                print("🖱️ Empty state icon tapped")
+                print("📱 Opening Settings to Scan tab...")
+                showingSettings = true
+            }
+            .help("Click to open Settings")
             
             VStack(spacing: 8) {
                 Text(viewModel.settingsStore.scanDirectories.isEmpty ? "No Scan Directories Configured" : "No Package Directories Found")

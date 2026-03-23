@@ -1,22 +1,40 @@
- # Package Cleaner
+# Package Cleaner
 
-A native macOS application that helps developers reclaim disk space by finding and removing package dependency directories from development projects.
+[![Build Status](https://github.com/Raspiska-Ltd/package-cleaner/actions/workflows/build.yml/badge.svg)](https://github.com/Raspiska-Ltd/package-cleaner/actions/workflows/build.yml)
+[![Release](https://github.com/Raspiska-Ltd/package-cleaner/actions/workflows/release.yml/badge.svg)](https://github.com/Raspiska-Ltd/package-cleaner/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![macOS](https://img.shields.io/badge/macOS-12.0+-blue.svg)](https://www.apple.com/macos)
+[![Swift](https://img.shields.io/badge/Swift-5.9+-orange.svg)](https://swift.org)
 
----
+A native macOS application that helps developers reclaim disk space by finding and removing package dependency directories like `node_modules`, `vendor`, and more.
 
-## Features
+<p align="center">
+  <img src="docs/images/search-results.png" alt="Search Results" width="800">
+</p>
 
-- **Offline Operation**: Works entirely without internet connectivity
-- **Multi-Language Support**: Detects package directories for Node.js, PHP, Java, Rust, Python, Swift, Dart, and more
-- **Smart Detection**: Reads project metadata from manifest files (package.json, composer.json, etc.)
-- **Activity Tracking**: Shows when you last worked on each project using Git/SVN history
-- **Auto-Cleanup**: Automatically identify and remove package directories older than 6 months
-- **Safe Deletion**: Moves to Trash by default for easy recovery
-- **Native Experience**: Built with Swift and SwiftUI for optimal macOS integration
+## ✨ Features
 
----
+- 🔍 **Smart Detection** - Finds package directories across multiple languages and frameworks
+- 📊 **Project Insights** - Shows project metadata, last activity, and disk usage
+- 🎯 **Flexible Filtering** - Filter by language, type, age, or search by name
+- 🗑️ **Safe Cleanup** - Moves to Trash by default for easy recovery
+- 🔒 **Privacy First** - 100% offline, no telemetry, no data collection
+- ⚡ **Native Performance** - Built with Swift and SwiftUI for macOS
 
-## Supported Package Types
+## 📸 Screenshots
+
+<details>
+<summary>View Screenshots</summary>
+
+### Search & Filter
+<img src="docs/images/search-results.png" alt="Search Results" width="800">
+
+### Settings
+<img src="docs/images/settings.png" alt="Settings" width="800">
+
+</details>
+
+## 🗂️ Supported Package Types
 
 | Directory | Language/Framework |
 |-----------|-------------------|
@@ -29,23 +47,18 @@ A native macOS application that helps developers reclaim disk space by finding a
 | `packages` | .NET (NuGet) |
 | `.pub-cache` | Dart, Flutter |
 
----
-
-## Requirements
+## 📋 Requirements
 
 - macOS 12.0 (Monterey) or later
-- Full Disk Access permission (for scanning all directories)
+- Xcode 15.0+ (for building from source)
 
----
-
-## Installation
+## 🚀 Installation
 
 ### Download (Recommended)
 
-1. Download the latest `Package.Cleaner.zip` from the [Releases](https://github.com/Raspiska-Ltd/package-cleaner/releases) page
-2. Unzip the file
-3. Move `Package Cleaner.app` to your `/Applications` folder
-4. Right-click the app and select "Open" on first launch (macOS security requirement)
+1. Download the latest `Package.Cleaner.zip` from [Releases](https://github.com/Raspiska-Ltd/package-cleaner/releases)
+2. Unzip and move `Package Cleaner.app` to `/Applications`
+3. Right-click the app and select "Open" on first launch
 
 ### Build from Source
 
@@ -56,93 +69,44 @@ swift build -c release
 ./scripts/build-app.sh
 ```
 
-The built app will be in `.build/release/Package Cleaner.app`
+## 💡 Quick Start
+
+1. **Add Scan Directories** - Open Settings (⌘,) and add directories like `~/Projects` or `~/Developer`
+2. **Scan** - Click Scan (⌘R) to find package directories
+3. **Filter & Sort** - Use filters and search to find what you need
+4. **Cleanup** - Select directories and delete (⌘⌫) to reclaim space
+
+### Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `⌘R` | Start scan |
+| `⌘F` | Focus search |
+| `⌘A` | Select all |
+| `⌘⌫` | Delete selected |
+| `⌘,` | Open settings |
+
+## 📚 Documentation
+
+- [Architecture](docs/ARCHITECTURE.md) - Technical design and decisions
+- [Requirements](docs/REQUIREMENTS.md) - Detailed specifications
+- [Roadmap](docs/ROADMAP.md) - Future plans and milestones
+- [Contributing](docs/CONTRIBUTING.md) - Contribution guidelines
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read the [Contributing Guide](docs/CONTRIBUTING.md) before submitting a pull request.
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+## 🏢 About
+
+Developed by [Raspiska Ltd](https://raspiska.co?utm_source=github&utm_medium=readme&utm_campaign=package-cleaner) - Building developer tools and productivity applications.
+
+**Links:** [Website](https://raspiska.co) • [Issues](https://github.com/Raspiska-Ltd/package-cleaner/issues) • [Releases](https://github.com/Raspiska-Ltd/package-cleaner/releases)
 
 ---
 
-## Usage
-
-### First Time Setup
-
-1. Launch Package Cleaner
-2. Open Settings (⌘,) and add directories to scan (e.g., `~/Projects`, `~/Developer`)
-3. Configure auto-cleanup threshold (default: 180 days)
-
-### Scanning
-
-1. Click **Scan** (⌘R) to search for package directories
-2. Watch live progress showing current directory and found count
-3. Results appear automatically with statistics
-
-### Filtering & Sorting
-
-- Use **Language** and **Type** dropdowns to filter results
-- Click **Sort** to change order (Name, Size, Date, Language)
-- Toggle ascending/descending with the arrow icon
-- Use the search bar (⌘F) to find specific projects
-
-### Cleanup
-
-**Manual Selection:**
-1. Select individual directories by clicking checkboxes
-2. Or use quick actions: **All**, **None**, or **Old** (projects older than threshold)
-3. Click **Delete** (⌘⌫) to remove selected directories
-4. Confirm deletion - files move to Trash by default
-
-**Keyboard Shortcuts:**
-- `⌘R` - Start scan
-- `⌘F` - Focus search
-- `⌘A` - Select all
-- `⌘⌫` - Delete selected
-- `⌘,` - Open settings
-
----
-
-## Privacy
-
-Package Cleaner is designed with privacy in mind:
-
-- No internet connection required
-- No telemetry or analytics
-- No data leaves your machine
-- Open source for full transparency
-
----
-
-## Documentation
-
-- [Requirements](docs/REQUIREMENTS.md) - Detailed functional and non-functional requirements
-- [Architecture](docs/ARCHITECTURE.md) - Technical architecture and design decisions
-- [Roadmap](docs/ROADMAP.md) - Development phases and milestones
-- [Contributing](docs/CONTRIBUTING.md) - How to contribute to the project
-
----
-
-## Contributing
-
-Contributions are welcome. Please read the [Contributing Guide](docs/CONTRIBUTING.md) before submitting a pull request.
-
----
-
-## License
-
-MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## About
-
-**Package Cleaner** is developed by [Raspiska Ltd](https://raspiska.co?utm_source=github&utm_medium=readme&utm_campaign=package-cleaner), a software development company focused on creating developer tools and productivity applications.
-
-### Links
-
-- 🌐 Website: [raspiska.co](https://raspiska.co?utm_source=github&utm_medium=readme&utm_campaign=package-cleaner)
-- 💻 GitHub: [Raspiska-Ltd/package-cleaner](https://github.com/Raspiska-Ltd/package-cleaner)
-- 🐛 Issues: [Report a bug](https://github.com/Raspiska-Ltd/package-cleaner/issues)
-- 📖 Releases: [Download latest version](https://github.com/Raspiska-Ltd/package-cleaner/releases)
-
----
-
-## Acknowledgments
-
-Inspired by tools like npkill, but built as a native macOS application with broader language support and modern UI.
+<sub>Inspired by npkill, built as a native macOS app with broader language support and modern UI.</sub>

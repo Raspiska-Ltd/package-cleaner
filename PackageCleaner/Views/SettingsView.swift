@@ -26,26 +26,30 @@ struct SettingsView: View {
             
             Divider()
             
-            TabView {
+            TabView(selection: $viewModel.selectedTab) {
                 generalSettings
                     .tabItem {
                         Label("General", systemImage: "gear")
                     }
+                    .tag(0)
                 
                 scanSettings
                     .tabItem {
                         Label("Scan", systemImage: "magnifyingglass")
                     }
+                    .tag(1)
                 
                 packageTypesSettings
                     .tabItem {
                         Label("Package Types", systemImage: "shippingbox")
                     }
+                    .tag(2)
                 
                 aboutSettings
                     .tabItem {
                         Label("About", systemImage: "info.circle")
                     }
+                    .tag(3)
             }
         }
         .frame(width: 650, height: 500)
@@ -254,6 +258,8 @@ struct SettingsView: View {
             allowsMultipleSelection: false
         ) { result in
             if case .success(let urls) = result, let url = urls.first {
+                // Start accessing security-scoped resource
+                _ = url.startAccessingSecurityScopedResource()
                 viewModel.addScanDirectory(url)
             }
         }

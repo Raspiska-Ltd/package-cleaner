@@ -5,6 +5,8 @@ struct ScanToolbarView: View {
     @Binding var showingSettings: Bool
     
     var body: some View {
+        let _ = print("🔘 Scan button state - isEmpty: \(mainViewModel.settingsStore.scanDirectories.isEmpty), count: \(mainViewModel.settingsStore.scanDirectories.count)")
+        
         HStack(spacing: 16) {
             ModernButton("Scan", icon: "magnifyingglass.circle.fill", style: .primary) {
                 mainViewModel.startScan()

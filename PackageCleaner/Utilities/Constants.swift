@@ -5,6 +5,7 @@ enum Constants {
     
     enum UserDefaultsKeys {
         static let scanDirectories = "scanDirectories"
+        static let scanDirectoryBookmarks = "scanDirectoryBookmarks"
         static let autoCleanupThresholdDays = "autoCleanupThresholdDays"
         static let excludedPaths = "excludedPaths"
         static let moveToTrash = "moveToTrash"

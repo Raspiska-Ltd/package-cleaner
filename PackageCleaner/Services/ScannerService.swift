@@ -68,6 +68,8 @@ class ScannerService: ScannerServiceProtocol {
             includingPropertiesForKeys: [.isDirectoryKey, .nameKey],
             options: [.skipsHiddenFiles, .skipsPackageDescendants]
         ) else {
+            print("⚠️ Failed to create enumerator for directory: \(directory.path)")
+            print("⚠️ Check if app has permission to access this directory")
             return []
         }
         

@@ -5,6 +5,7 @@ import SwiftUI
 class SettingsViewModel: ObservableObject {
     @ObservedObject var settingsStore: SettingsStore
     @Published var showingDirectoryPicker = false
+    @Published var selectedTab = 0
     
     init(settingsStore: SettingsStore = .shared) {
         self.settingsStore = settingsStore
@@ -12,8 +13,12 @@ class SettingsViewModel: ObservableObject {
     
     func addScanDirectory(_ url: URL) {
         if !settingsStore.scanDirectories.contains(url) {
+            print("📁 Adding scan directory: \(url.path)")
             settingsStore.scanDirectories.append(url)
             settingsStore.save()
+            print("✅ Directory added. Total directories: \(settingsStore.scanDirectories.count)")
+        } else {
+            print("⚠️ Directory already exists: \(url.path)")
         }
     }
     
