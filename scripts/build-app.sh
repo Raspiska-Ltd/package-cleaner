@@ -104,6 +104,14 @@ fi
 # Create PkgInfo
 echo "APPL????" > "$CONTENTS_DIR/PkgInfo"
 
+# Ad-hoc code sign the app (required for macOS Gatekeeper)
+echo "🔐 Code signing app (ad-hoc)..."
+codesign --force --deep --sign - "$APP_DIR"
+
+# Remove quarantine attribute (prevents "damaged app" error)
+echo "🛡️  Removing quarantine attribute..."
+xattr -cr "$APP_DIR"
+
 # Create zip archive
 echo "🗜️  Creating zip archive..."
 cd "$BUILD_DIR"
@@ -116,3 +124,6 @@ echo "📍 Zip archive: $BUILD_DIR/$APP_NAME.zip"
 echo ""
 echo "To install: Copy '$APP_NAME.app' to /Applications"
 echo "To distribute: Upload '$APP_NAME.zip' to GitHub Releases"
+echo ""
+echo "⚠️  Note: Users may need to right-click and select 'Open' on first launch,"
+echo "   or run: xattr -cr '/Applications/$APP_NAME.app'"
