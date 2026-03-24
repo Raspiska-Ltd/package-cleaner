@@ -56,26 +56,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🔄 Reset to Defaults button in Settings with confirmation dialogs
 - 🧹 Clear Results button to remove scan data
 - 📝 Icon conversion script for iOS to macOS format
+- 🖱️ Clickable empty state icon that opens Settings to Scan tab
+- 📸 Screenshots in README for better project showcase
+- 🏷️ Standard open source badges (Build Status, Release, License, macOS, Swift)
 
 ### Fixed
 - 🔒 Permission management - no longer requests access on app launch
 - 🔒 Permissions only requested for user-selected directories
+- 🔐 Security-scoped bookmarks for persistent directory access
+- 🔐 Single non-home directory now scans correctly with bookmark persistence
 - ⚙️ Settings UI now updates immediately when adding/removing directories
 - ⚙️ SettingsStore singleton ensures consistent state across all views
 - 🎯 Scan button properly disabled when no directories configured
+- 🎯 Scan button state correctly reflects directory configuration
 - 📊 Empty state messages now context-aware (before/after configuration)
+- 🎨 Empty state icon always visible (folder.fill or folder.fill.badge.plus)
+- 🎨 Empty state icon clickable in all states to open Settings
 - 🔧 Build script properly embeds app icon using iconutil
+- 🔄 Reset to Defaults properly displays home directory in UI
+- 🪟 ViewModels now shared between main window and Settings window
+- 📑 Settings opens to Scan tab when clicked from empty state
 
 ### Changed
 - 🏠 Default scan directory set to home directory on first launch
+- 🏠 Home directory doesn't require security-scoped bookmarks
 - 💬 Improved user guidance with helpful tooltips and messages
 - 🎨 Better visual feedback for Reset to Defaults action
+- 📖 README modernized with badges, screenshots, and concise format
+- 📖 README shortened by ~40% while being more informative
 
 ### Technical
 - Singleton pattern for SettingsStore to prevent state inconsistencies
 - Manual objectWillChange triggers for reliable UI updates
 - ForEach using indices for proper list tracking
 - Alert placement in main view hierarchy for proper display
+- Security-scoped bookmark creation and restoration for user-selected directories
+- Bookmark fallback to paths for home directory and legacy data
+- ViewModels created at app level and passed to views for state consistency
+- Tab selection control in SettingsViewModel for programmatic navigation
 
 ## [Unreleased]
 

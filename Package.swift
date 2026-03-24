@@ -1,4 +1,4 @@
-// swift-tools-version: 5.9
+// swift-tools-version: 5.10
 import PackageDescription
 
 let package = Package(
@@ -13,7 +13,7 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/SwiftUIX/SwiftUIX.git", from: "0.1.9"),
+        .package(url: "https://github.com/SwiftUIX/SwiftUIX.git", from: "0.2.0"),
         .package(url: "https://github.com/sindresorhus/Defaults.git", from: "7.3.1"),
         .package(url: "https://github.com/sindresorhus/KeyboardShortcuts.git", from: "1.15.0")
     ],

@@ -9,11 +9,14 @@ on:
 
 jobs:
   build:
-    runs-on: macos-12
+    runs-on: macos-latest
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+    
+    - name: Select Xcode 16.1
+      run: sudo xcode-select -s /Applications/Xcode_16.1.app/Contents/Developer
     
     - name: Get version from tag
       id: get_version
@@ -24,14 +27,10 @@ jobs:
         chmod +x scripts/build-app.sh
         ./scripts/build-app.sh
     
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Create Release and Upload Asset
+      uses: ncipollo/release-action@v1
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Package Cleaner ${{ steps.get_version.outputs.VERSION }}
+        name: Package Cleaner ${{ steps.get_version.outputs.VERSION }}
         body: |
           ## Package Cleaner v${{ steps.get_version.outputs.VERSION }}
           
@@ -65,15 +64,6 @@ jobs:
           ---
           
           Made with ❤️ by [Raspiska Ltd](https://raspiska.co?utm_source=github&utm_medium=release&utm_campaign=package-cleaner)
-        draft: false
-        prerelease: false
-    
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: .build/release/Package Cleaner.zip
-        asset_name: Package.Cleaner.zip
-        asset_content_type: application/zip
+        artifacts: ".build/release/Package Cleaner.zip"
+        artifactContentType: application/zip
+        token: ${{ secrets.GITHUB_TOKEN }}
